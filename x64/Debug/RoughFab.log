@@ -1,2 +1,6 @@
 ﻿  RoughFab.cpp
-  RoughFab.vcxproj -> E:\Code\RoughFab\x64\Debug\RoughFab.exe
+E:\Code\库\libigl\include\igl\opengl\glfw\Viewer.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\software\vcpkg\installed\x64-windows\include\Eigen\src\Core\arch\Default\Half.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\software\vcpkg\installed\x64-windows\include\Eigen\src\Core\arch\Default\BFloat16.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\software\vcpkg\installed\x64-windows\include\Eigen\src\Core\arch\Default\GenericPacketMathFunctions.h(676,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\Code\库\libigl\include\igl\opengl\gl.h(23,10): fatal error C1083: 无法打开包括文件: “glad/gl.h”: No such file or directory
