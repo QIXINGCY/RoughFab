@@ -28,11 +28,7 @@ int main(int argc, char* argv[])
         1, 5, 7,
         1, 7, 3).finished();
 
-    // Plot the mesh
-    igl::opengl::glfw::Viewer viewer;
-    viewer.data().set_mesh(V, F);
-    viewer.data().set_face_based(true);
-    viewer.launch();
+    std::cout << "Hello World and success!\n";
 }
 
 
