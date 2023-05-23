@@ -78,6 +78,9 @@
     <IncludePath>E:\library\libigl\include;$(IncludePath)</IncludePath>
     <LibraryPath>E:\library\libigl\build\lib\Debug;$(LibraryPath)</LibraryPath>
   </PropertyGroup>
+  <PropertyGroup Label="Vcpkg">
+    <VcpkgEnabled>true</VcpkgEnabled>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
@@ -112,12 +115,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\library\libigl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\library\libigl\tests\include;E:\library\libigl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glad.lib   igl.pdb                  igl_glfw.lib    igl_opengl.pdb  tetgen.lib;glad.pdb   igl_copyleft_core.lib    igl_glfw.pdb    imgui.lib       tetgen.pdb;glfw3.lib  igl_copyleft_core.pdb    igl_imgui.lib   imgui.pdb;glfw3.pdb  igl_copyleft_tetgen.lib  igl_imgui.pdb   imguizmo.lib;igl.lib    igl_copyleft_tetgen.pdb  igl_opengl.lib  imguizmo.pdb;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glad.lib;igl.pdb;igl_glfw.lib;igl_opengl.pdb;tetgen.lib;glad.pdb;igl_copyleft_core.lib;igl_glfw.pdb;imgui.lib;tetgen.pdb;glfw3.lib;igl_copyleft_core.pdb;igl_imgui.lib;imgui.pdb;glfw3.pdb;igl_copyleft_tetgen.lib;igl_imgui.pdb;imguizmo.lib;igl.lib;igl_copyleft_tetgen.pdb;igl_opengl.lib;imguizmo.pdb;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>E:\library\libigl\build\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
@@ -129,14 +132,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>E:\library\libigl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>E:\library\libigl\tests\include;E:\library\libigl\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalDependencies>glad.lib   igl.pdb                  igl_glfw.lib    igl_opengl.pdb  tetgen.lib;glad.pdb   igl_copyleft_core.lib    igl_glfw.pdb    imgui.lib       tetgen.pdb;glfw3.lib  igl_copyleft_core.pdb    igl_imgui.lib   imgui.pdb;glfw3.pdb  igl_copyleft_tetgen.lib  igl_imgui.pdb   imguizmo.lib;igl.lib    igl_copyleft_tetgen.pdb  igl_opengl.lib  imguizmo.pdb;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>glad.lib;igl.pdb;igl_glfw.lib;igl_opengl.pdb;tetgen.lib;glad.pdb;igl_copyleft_core.lib;igl_glfw.pdb;imgui.lib;tetgen.pdb;glfw3.lib;igl_copyleft_core.pdb;igl_imgui.lib;imgui.pdb;glfw3.pdb;igl_copyleft_tetgen.lib;igl_imgui.pdb;imguizmo.lib;igl.lib;igl_copyleft_tetgen.pdb;igl_opengl.lib;imguizmo.pdb;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>E:\library\libigl\build\lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
