@@ -1,6 +1,151 @@
 ﻿  RoughFab.cpp
-E:\Code\库\libigl\include\igl\opengl\glfw\Viewer.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
+E:\library\libigl\include\igl\opengl\glfw\Viewer.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 E:\software\vcpkg\installed\x64-windows\include\Eigen\src\Core\arch\Default\Half.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 E:\software\vcpkg\installed\x64-windows\include\Eigen\src\Core\arch\Default\BFloat16.h(1,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
 E:\software\vcpkg\installed\x64-windows\include\Eigen\src\Core\arch\Default\GenericPacketMathFunctions.h(676,1): warning C4819: 该文件包含不能在当前代码页(936)中表示的字符。请将该文件保存为 Unicode 格式以防止数据丢失
-E:\Code\库\libigl\include\igl\opengl\gl.h(23,10): fatal error C1083: 无法打开包括文件: “glad/gl.h”: No such file or directory
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(21,16): error C7525: 内联变量至少需要 "/std:c++17"
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(21,46): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(21,22): error C2146: 语法错误: 缺少“;”(在标识符“bind_vertex_attrib_array”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(22,20): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(22,20): error C2146: 语法错误: 缺少“)”(在标识符“program_shader”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(22,20): error C3646: “program_shader”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(22,34): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(23,25): error C2143: 语法错误: 缺少“;”(在“&”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(23,25): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(23,25): error C2226: 语法错误: 意外的“std::string”类型
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(23,25): warning C4228: 使用了非标准扩展: 忽略声明符列表中逗号后面的限定符
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(23,30): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(23,30): error C2530: “igl::opengl::name”: 必须初始化引用
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24,22): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24,14): error C2146: 语法错误: 缺少“;”(在标识符“bufferID”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(26,19): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(3,31): error C2143: 语法错误: 缺少“;”(在“igl::opengl::bind_vertex_attrib_array”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(3,12): error C7525: 内联变量至少需要 "/std:c++17"
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(3,55): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(4,16): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(4,16): error C2146: 语法错误: 缺少“)”(在标识符“program_shader”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(4,16): error C3646: “program_shader”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(4,30): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(5,21): error C2143: 语法错误: 缺少“;”(在“&”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(5,21): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(5,21): error C2226: 语法错误: 意外的“std::string”类型
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(5,21): warning C4228: 使用了非标准扩展: 忽略声明符列表中逗号后面的限定符
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(5,26): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(5,26): error C2530: “name”: 必须初始化引用
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(6,18): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(6,10): error C2146: 语法错误: 缺少“;”(在标识符“bufferID”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(8,15): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(9,1): error C2143: 语法错误: 缺少“;”(在“{”的前面)
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(9,1): error C2447: “{”: 缺少函数标题(是否是老式的形式表?)
+E:\library\libigl\include\igl\opengl\create_shader_program.h(41,18): error C2923: "std::map": "igl::opengl::GLuint" 不是参数 "_Ty" 的有效 模板 类型参数
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(41,18): error C2976: “std::map”: 模板 参数太少
+E:\Visual Studio\VC\Tools\MSVC\14.32.31326\include\map(73): message : 参见“std::map”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(42,7): error C2061: 语法错误: 标识符“GLuint”
+E:\library\libigl\include\igl\opengl\create_shader_program.h(46,18): error C2923: "std::map": "igl::opengl::GLuint" 不是参数 "_Ty" 的有效 模板 类型参数
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(46,18): error C2976: “std::map”: 模板 参数太少
+E:\Visual Studio\VC\Tools\MSVC\14.32.31326\include\map(73): message : 参见“std::map”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(47,7): error C2061: 语法错误: 标识符“GLuint”
+E:\library\libigl\include\igl\opengl\create_shader_program.h(48,16): error C7525: 内联变量至少需要 "/std:c++17"
+E:\library\libigl\include\igl\opengl\create_shader_program.h(48,44): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\create_shader_program.h(48,16): error C2086: “int igl::opengl::GLuint”: 重定义
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(48,23): error C2146: 语法错误: 缺少“;”(在标识符“create_shader_program”的前面)
+E:\library\libigl\include\igl\opengl\create_shader_program.h(52,18): error C2923: "std::map": "igl::opengl::GLuint" 不是参数 "_Ty" 的有效 模板 类型参数
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(52,18): error C2976: “std::map”: 模板 参数太少
+E:\Visual Studio\VC\Tools\MSVC\14.32.31326\include\map(73): message : 参见“std::map”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(52,50): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\create_shader_program.h(52,50): error C2556: “int igl::opengl::create_shader_program(const std::string &,const std::string &,const std::string &,const std::map &)”: 重载函数与“bool igl::opengl::create_shader_program(const std::string &,const std::string &,const std::string &,const std::map &)”只是在返回类型上不同
+E:\library\libigl\include\igl\opengl\create_shader_program.h(37): message : 参见“igl::opengl::create_shader_program”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(48,23): error C2371: “igl::opengl::create_shader_program”: 重定义；不同的基类型
+E:\library\libigl\include\igl\opengl\create_shader_program.h(37): message : 参见“igl::opengl::create_shader_program”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(53,16): error C7525: 内联变量至少需要 "/std:c++17"
+E:\library\libigl\include\igl\opengl\create_shader_program.h(53,44): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\create_shader_program.h(53,16): error C2086: “int igl::opengl::GLuint”: 重定义
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(53,23): error C2146: 语法错误: 缺少“;”(在标识符“create_shader_program”的前面)
+E:\library\libigl\include\igl\opengl\create_shader_program.h(56,18): error C2923: "std::map": "igl::opengl::GLuint" 不是参数 "_Ty" 的有效 模板 类型参数
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(56,18): error C2976: “std::map”: 模板 参数太少
+E:\Visual Studio\VC\Tools\MSVC\14.32.31326\include\map(73): message : 参见“std::map”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(56,50): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\create_shader_program.h(56,50): error C2556: “int igl::opengl::create_shader_program(const std::string &,const std::string &,const std::map &)”: 重载函数与“bool igl::opengl::create_shader_program(const std::string &,const std::string &,const std::map &)”只是在返回类型上不同
+E:\library\libigl\include\igl\opengl\create_shader_program.h(43): message : 参见“igl::opengl::create_shader_program”的声明
+E:\library\libigl\include\igl\opengl\create_shader_program.h(53,23): error C2371: “igl::opengl::create_shader_program”: 重定义；不同的基类型
+E:\library\libigl\include\igl\opengl\create_shader_program.h(43): message : 参见“igl::opengl::create_shader_program”的声明
+E:\library\libigl\include\igl\opengl\load_shader.h(29,16): error C7525: 内联变量至少需要 "/std:c++17"
+E:\library\libigl\include\igl\opengl\load_shader.h(29,34): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\load_shader.h(29,16): error C2086: “int igl::opengl::GLuint”: 重定义
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.h(24): message : 参见“igl::opengl::GLuint”的声明
+E:\library\libigl\include\igl\opengl\load_shader.h(29,23): error C2146: 语法错误: 缺少“;”(在标识符“load_shader”的前面)
+E:\library\libigl\include\igl\opengl\load_shader.h(30,44): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\load_shader.h(30,44): error C2146: 语法错误: 缺少“)”(在标识符“type”的前面)
+E:\library\libigl\include\igl\opengl\load_shader.h(30,44): error C3646: “type”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\load_shader.h(30,48): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\load_shader.h(30,49): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\print_shader_info_log.h(19,56): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\print_shader_info_log.h(19,56): error C2146: 语法错误: 缺少“)”(在标识符“obj”的前面)
+E:\library\libigl\include\igl\opengl\print_shader_info_log.h(19,56): error C3646: “obj”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.h(19,59): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(13,65): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(13,65): error C2146: 语法错误: 缺少“)”(在标识符“obj”的前面)
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(13,65): error C3646: “obj”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(13,68): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(15,9): error C2146: 语法错误: 缺少“;”(在标识符“infologLength”的前面)
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(15,9): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(16,9): error C2146: 语法错误: 缺少“;”(在标识符“charsWritten”的前面)
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(16,9): error C2065: “charsWritten”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(20,17): error C2065: “obj”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(20,22): error C2065: “GL_INFO_LOG_LENGTH”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(20,42): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(20,3): error C3861: “glGetShaderiv”: 找不到标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(22,7): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(24,30): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(25,24): error C2065: “obj”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(25,29): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(25,45): error C2065: “charsWritten”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_shader_info_log.cpp(25,5): error C3861: “glGetShaderInfoLog”: 找不到标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(13,32): error C2143: 语法错误: 缺少“;”(在“igl::opengl::load_shader”的前面)
+E:\library\libigl\include\igl\opengl\load_shader.cpp(13,12): error C7525: 内联变量至少需要 "/std:c++17"
+E:\library\libigl\include\igl\opengl\load_shader.cpp(13,43): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\load_shader.cpp(13,12): error C2086: “int GLuint”: 重定义
+E:\library\libigl\include\igl\opengl\bind_vertex_attrib_array.cpp(6): message : 参见“GLuint”的声明
+E:\library\libigl\include\igl\opengl\load_shader.cpp(14,40): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\load_shader.cpp(14,40): error C2146: 语法错误: 缺少“)”(在标识符“type”的前面)
+E:\library\libigl\include\igl\opengl\load_shader.cpp(14,40): error C3646: “type”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(14,44): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\load_shader.cpp(15,1): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\load_shader.cpp(18,21): error C2143: 语法错误: 缺少“;”(在“常数”的前面)
+E:\library\libigl\include\igl\opengl\load_shader.cpp(21,10): error C2146: 语法错误: 缺少“;”(在标识符“s”的前面)
+E:\library\libigl\include\igl\opengl\load_shader.cpp(21,10): error C2065: “s”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(21,29): error C2065: “type”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(21,14): error C3861: “glCreateShader”: 找不到标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(22,6): error C2065: “s”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(29,18): error C2065: “s”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(29,3): error C3861: “glShaderSource”: 找不到标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(30,19): error C2065: “s”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(30,3): error C3861: “glCompileShader”: 找不到标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(32,38): error C2065: “s”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\load_shader.cpp(33,10): error C2065: “s”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.h(19,57): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\print_program_info_log.h(19,57): error C2146: 语法错误: 缺少“)”(在标识符“obj”的前面)
+E:\library\libigl\include\igl\opengl\print_program_info_log.h(19,57): error C3646: “obj”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\print_program_info_log.h(19,60): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(13,66): error C4430: 缺少类型说明符 - 假定为 int。注意: C++ 不支持默认 int
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(13,66): error C2146: 语法错误: 缺少“)”(在标识符“obj”的前面)
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(13,66): error C3646: “obj”: 未知重写说明符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(13,69): error C2059: 语法错误:“)”
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(15,9): error C2146: 语法错误: 缺少“;”(在标识符“infologLength”的前面)
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(15,9): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(16,9): error C2146: 语法错误: 缺少“;”(在标识符“charsWritten”的前面)
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(16,9): error C2065: “charsWritten”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(19,18): error C2065: “obj”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(19,23): error C2065: “GL_INFO_LOG_LENGTH”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(19,43): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(19,3): error C3861: “glGetProgramiv”: 找不到标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(21,7): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(23,30): error C2065: “infologLength”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(24,25): error C2065: “obj”: 未声明的标识符
+E:\library\libigl\include\igl\opengl\print_program_info_log.cpp(24,28): fatal error C1003: 错误计数超过 100；正在停止编译
