@@ -16,7 +16,8 @@ set(GMP_DIR E:/software/vcpkg/installed/x64-windows/share/gmp)
 file(GLOB SRC_FILES *.cpp)
 
 #添加可执行文件
-add_executable(${PROJECT_NAME} ${SRC_FILES})
+add_executable(${PROJECT_NAME} main.cpp)
+add_executable(test test.cpp)
 
 # 查找并链接OpenCV库
 find_package(OpenCV REQUIRED)
@@ -29,3 +30,19 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CGAL::CGAL)
 #链接GMP
 find_package(GMP REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE ${GMP_LIBRARIES})
+
+include(ExternalProject)
+ExternalProject_Add(
+    pgl
+    PREFIX ${CMAKE_BINARY_DIR}/third_party/pgl
+    GIT_REPOSITORY https://github.com/haisenzhao/personal-geom-lib.git
+    CONFIGURE_COMMAND ""
+    BUILD_COMMAND ""
+    INSTALL_COMMAND ""
+    LOG_DOWNLOAD ON
+    )
+ExternalProject_Get_Property(pgl source_dir)
+set(PglIncludeDir ${source_dir})
+
+include_directories(${PglIncludeDir})
+add_dependencies(${PROJECT_NAME} pgl)

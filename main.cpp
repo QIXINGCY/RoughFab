@@ -1,20 +1,109 @@
-#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
-#include <CGAL/Polygon_2.h>
-#include<bits/stdc++.h>
-#include <CGAL/Boolean_set_operations_2.h>
+// main.cpp : Defines the entry point for the console application.
+//
+
+
+#include "pgl_functs.hpp"
+#include "RI.hpp"
+#include "tinyxml2.hpp"
+#include "cgal.h"
+#include <bits/stdc++.h>
 #include <opencv2/opencv.hpp>
 
 using namespace std;
+using namespace PGL;
+using namespace PPGL;
 
-typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
-typedef K::Point_2 Point_2;//点
-typedef CGAL::Polygon_2<K> Polygon_2;
+
+//#include <sys/stat.h>
+//#include <string>
+//#include <fstream>
+
+
+
+int Check2DIntersection()
+{
+	auto Load = [](Vector2d2& contours)
+	{
+		string address = "E:/Code/RoughFab/build/test.txt";
+		ifstream infile;
+		infile.open(address);
+		if (!infile.is_open()) {
+			std::cout << "文件打开失败" << endl;
+			return;
+		}
+
+		string line;
+
+		while (getline(infile, line))
+		{//每次从文件读取一行
+			istringstream iss(line);
+			Vector2d1 points;
+			int n;
+			iss >> n;
+			double x, y;
+			for (int i = 0; i < n; i++)
+			{
+				iss >> x >> y;
+				points.push_back(Vector2d(x, y));
+			}
+			contours.push_back(points);
+		}
+	};
+
+	Vector2d2 contours;
+	Load(contours);
+
+
+	for (int i = 0; i < contours.size(); i++)
+	{
+		if (PL().CGAL_2D_Polygon_Is_Clockwise_Oriented_C(contours[i]))
+		{
+			std::reverse(contours[i].begin(), contours[i].end());
+		}
+		//Functs::Export_Segment(contours[i],);
+
+		Vector2d center = Functs::GetCenter(contours[i]);
+
+		for (int j = 0; j < contours[i].size(); j++)
+		{
+			contours[i][j] = contours[i][j] - center;
+		}
+
+		auto c3d = Functs::Vector2d3d(contours[i], 0.0);
+		Functs::OutputObj3d("D:\\debug_" + Functs::IntString(i) + ".obj", c3d);
+
+		bool b = PL().CGAL_2D_Polygon_Simple_C(contours[i]);
+
+		std::cerr << "Simple test: " << i << " " << b << std::endl;
+	}
+
+	Vector1d1 des;
+	for (int i = 0; i < contours.size(); i++)
+	{
+		for (int j = i + 1; j < contours.size(); j++)
+		{
+			double ds = PL().CGAL_2D_Distance_Polygon_Polygon_C(contours[i], contours[j]);
+			//double cs = CGAL_2D_Intersection_Polygon_Polygon(contours[i], contours[j]);
+
+			double cs = PL().CGAL_2D_Two_Polygons_Intersection_C(contours[i], contours[j]);
+
+			std::cerr << i << " " << j << " dis: " << ds << " collision: " << cs << std::endl;
+			des.push_back(ds);
+		}
+	}
+
+	return 0;
+}
+
 
 struct perior_geometry {//集合类型，包含种类，还有x、y偏移量
     int type;
     int yadd;
 };
 double boxx, boxy;//全局变量，代表构型的x、y值
+
+Vector2d1 a = { Vector2d(0,0), Vector2d(1,0), Vector2d(1,1)};
+Vector2d2 b = {a,a,a};
 
 vector<Polygon_2> polygons;//几何结构
 vector<Polygon_2> geometry_layer;//几何图层
@@ -413,7 +502,7 @@ void geometry_layer_output(vector<Polygon_2> a) {
     // 计算图像的尺寸
 
     // 创建一个黑色的图像
-    cv::Mat image(boxy+10, 2 * boxx+10, CV_64FC3, cv::Scalar(0, 0, 0));
+    cv::Mat image(boxy + 10, 2 * boxx + 10, CV_64FC3, cv::Scalar(0, 0, 0));
 
     // 绘制多边形
     for (const auto& polygon : a)
@@ -422,7 +511,7 @@ void geometry_layer_output(vector<Polygon_2> a) {
         for (const auto& vertex : polygon.vertices())
         {
             double x = vertex.x() + image.cols / 2;
-            double y = image.rows - vertex.y()-10;
+            double y = image.rows - vertex.y() - 10;
             cv::Point point(x, y);
             points.push_back(point);
         }
