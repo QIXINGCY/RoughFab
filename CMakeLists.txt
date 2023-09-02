@@ -3,14 +3,16 @@ cmake_minimum_required(VERSION 3.16)
 #项目名称
 project(RoughFab)
 
+# 在CMake中查找vcpkg的安装目录
+set(VCPKG_ROOT "/path/to/vcpkg" CACHE PATH "Vcpkg root directory")
 #opencv路径
 set(OpenCV_DIR "E:/Code/library/opencv/build")
 #CMAKE路径定义
 set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 set(CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows)  
 set(CGAL_DIR E:/library/CGAL/CGAL-5.5.2)
-set(GMP_DIR E:/software/vcpkg/installed/x64-windows/share/gmp)
-#set(ENV{PKG_CONFIG_PATH} "E:/software/vcpkg/installed/x64-windows/share/pkgconfig/bin")
+set(GMP_DIR ${VCPKG_ROOT}/installed/x64-windows/share/gmp)
+#set(ENV{PKG_CONFIG_PATH} ${VCPKG_ROOT}/installed/x64-windows/share/pkgconfig/bin)
 
 # Add your project files
 file(GLOB SRC_FILES *.cpp)

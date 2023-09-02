@@ -4,10 +4,95 @@
 #include "cgal.h"
 #include <bits/stdc++.h>
 #include <opencv2/opencv.hpp>
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Polygon_2.h>
+#include <CGAL/Boolean_set_operations_2.h>
+#include <CGAL/Filtered_kernel/internal/Static_filters/Do_intersect_2.h>
+#include <CGAL/point_generators_2.h>
+#include <CGAL/squared_distance_2.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+
+typedef CGAL::Exact_predicates_inexact_constructions_kernel K;
+typedef K::Point_2 Point_2;
+typedef CGAL::Polygon_2<K> Polygon_2;
+typedef K::Segment_2 Segment_2;
+typedef CGAL::Constrained_Delaunay_triangulation_2<K> CDT;
 
 using namespace std;
 using namespace PGL;
 using namespace PPGL;
+
+double boxx, boxy;
+
+double pointToPolygonDist(const Point_2& p, const Polygon_2& polygon) {
+    int count = 0;
+    double minDist = INFINITY;
+
+    for (auto e = polygon.edges_begin(); e != polygon.edges_end(); ++e) {
+        const Point_2& a = e->source();
+        const Point_2& b = e->target();
+
+        // 判断点 p 与线段 ab 是否在同一水平线上，并且 p 在 ab 的左侧
+        if ((a.y() > p.y() != b.y() > p.y()) &&
+            (p.x() < (b.x() - a.x()) * (p.y() - a.y()) / (b.y() - a.y()) + a.x())) {
+            count++;
+        }
+
+        // 计算点 p 到线段 ab 的最短距离，并更新最小距离
+        Segment_2 s(a, b);
+        minDist = std::min(minDist, squared_distance(p, s));
+    }
+
+    if (count % 2 == 0) {
+        return std::sqrt(abs(minDist));
+
+    }
+
+    return -std::sqrt(abs(minDist));
+}
+
+void CGAL_2D_Polygon_Dart_Sampling(const vector<Polygon_2>& py, const double& d, vector<Point_2>& sampling_points, const int& total_iter)
+{
+    Functs::MAssert(d > 0 && d < 1.0, "CGAL_2D_Polygon_Dart_Sampling if (!(d > 0 && d < 1.0))");
+
+    double xmin = 0;
+    double ymin = 0;
+    double xmax = boxx;
+    double ymax = boxy;
+    double diagonal_length = sqrt(boxx * boxx + boxy * boxy);
+    double minimal_d = d * diagonal_length;
+    
+    
+    int run = 0;
+    vector<Point_2> insert_points;
+    while (run < total_iter)
+    {
+        run++;
+        double x = rand() / double(RAND_MAX);
+        double y = rand() / double(RAND_MAX);
+        x = (xmax - xmin) * x + xmin;
+        y = (ymax - ymin) * y + ymin;
+        Point_2 point(x, y);
+        double distance = CGAL_IA_MAX_DOUBLE;
+        for (int num = 0; num < py.size(); num++) {
+            Polygon_2 poly=py[num];
+            distance = min(distance, pointToPolygonDist(point, poly));
+            
+        }
+        for (int num = 0; num < insert_points.size(); num++) {
+            distance = min(distance, squared_distance(point, insert_points[num]));
+
+        }
+        if (distance > minimal_d)
+        {
+            insert_points.push_back(Point_2(x, y));
+            run = 0;
+        }
+    }
+    sampling_points = insert_points;
+}
+
+
 
 struct Candidate {
     std::vector<Vector2d1> polygons;  // 解决方案中的多边形集合
@@ -26,14 +111,11 @@ struct Candidate {
 class Beamsearch {
 public:
     vector<Vector2d1> polygons;
-    double boxx, boxy;
     double calculateScore(const std::vector<Vector2d1>& polygons);
     bool doPolygonsCollide2(const Vector2d1& poly1, const vector<Vector2d1>& poly2);
     Vector2d1 translatePolygon(const Vector2d1& polygon, double dx, double dy);
     std::vector<Vector2d1> beamSearch(const std::vector<Vector2d1>& inputPolygons, int beamWidth, const Vector2d1& boundingRect);
-    void work(int beamWidth);
-    int run();
-    void get_more_geometry();
+    void work();
     void get_points_to_polygon();
     std::vector<Vector2d1> perior_geometry_put();
     void geometry_layer_output(vector<Vector2d1> a);
@@ -46,8 +128,6 @@ double Beamsearch::calculateScore(const std::vector<Vector2d1>& polygons) {
     double minX = 100000000.0;
     double minY = 100000000.0;
     for (const Vector2d1 poly : polygons) {
-        CGAL_2D_Polygon_Area;
-
         double need_area = PL().CGAL_2D_Polygon_Area_C(poly);
         totalArea += std::abs(need_area);
         for (const auto& vertex : poly) {
@@ -83,6 +163,29 @@ Vector2d1 Beamsearch::translatePolygon(const Vector2d1& polygon, double dx, doub
     return Vector2d1(translatedVertices.begin(), translatedVertices.end());
 }
 
+bool beamssort(const Vector2d1& poly1, const Vector2d1& poly2)
+{
+    double xmax_score1, xmin_score1, xlength_score1, ylength_score1, area_score1;
+    double xmax_score2, xmin_score2, xlength_score2, ylength_score2, area_score2;
+    Vector2d max1, min1, max2, min2;
+    Functs::GetBoundingBox(poly1, min1, max1);
+    Functs::GetBoundingBox(poly2, min2, max2);
+    xmax_score1 = max1.x / boxx;
+    xmax_score2 = max2.x / boxx;
+    xmin_score1 = min1.x / boxx;
+    xmin_score2 = min2.x / boxx;
+    xlength_score1 = (max1.x - min1.x) / boxx;
+    xlength_score2 = (max2.x - min2.x) / boxx;
+    ylength_score1 = (max1.y - min1.y) / boxy;
+    ylength_score2 = (max2.y - min2.y) / boxy;
+    area_score1 = PL().CGAL_2D_Polygon_Area_C(poly1) / (boxx * (max1.y - min1.y));
+    area_score2 = PL().CGAL_2D_Polygon_Area_C(poly2) / (boxx * (max2.y - min2.y));
+
+    double score1 = xmax_score1 + xmin_score1 + xlength_score1 + ylength_score1 + area_score1;
+    double score2 = xmax_score2 + xmin_score2 + xlength_score2 + ylength_score2 + area_score2;
+    return score1 > score2;
+}
+
 std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inputPolygons, int beamWidth, const Vector2d1& boundingRect)
 {
     std::priority_queue < Candidate, std::vector<Candidate>, greater<Candidate>> candidates;
@@ -92,10 +195,7 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
 
     // 按照一定的优先放置顺序对输入的多边形进行排序，这里采用了按照面积从大到小排序的示例
     std::vector<Vector2d1> sortedPolygons = inputPolygons;
-    //std::sort(sortedPolygons.begin(), sortedPolygons.end(), [](const Vector2d1& poly1, const Vector2d1& poly2) {
-    //    // 优先放置顺序进行比较，可以按照面积、边长等进行排序
-    //    return std::abs(poly1.area()) > std::abs(poly2.area());
-    //    });
+    std::sort(sortedPolygons.begin(), sortedPolygons.end(), beamssort);
 
     // 处理每个待放置的位置
     for (int times = 0; times < sortedPolygons.size(); times++) {
@@ -124,6 +224,10 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
                 double dx = 0.0;
                 double dy = bomax.y - somax.y;
                 Vector2d1 finalPolygon = translatePolygon(sortedPolygons[i], dx, dy);
+                if (doPolygonsCollide2(finalPolygon, candidate.polygons) || somax.y > boxy) {
+                    tab--;
+                    continue;
+                }
                 // 使用二分法进行平移，直到发生碰撞
                 Functs::GetBoundingBox(finalPolygon, bomin, bomax);
                 double bottom_distance = bomin.y;
@@ -162,12 +266,10 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
                 double newScore = calculateScore(newPolygons);
                 cout << newScore << endl;//输出评分
                 // 将新的解决方案添加到候选集合中
-
                 geometry_layer_output(newPolygons);
                 nextCandidates.push(Candidate(newPolygons, newScore, temp));
                 // 保持候选队列的大小不超过束宽度
-                if (nextCandidates.size() > beamWidth) {
-                    cout << "被扔出的" << nextCandidates.top().score << endl;
+                while (nextCandidates.size() > beamWidth) {
                     nextCandidates.pop();
                 }
             }
@@ -179,8 +281,10 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
     return candidates.top().polygons;
 }
 
-void Beamsearch::work(int beamWidth) {
+void Beamsearch::work() {
+    get_points_to_polygon();
     Vector2d1 boundingRect;
+    int beamWidth = 3;
     boundingRect.push_back(Vector2d(0, 0));
     boundingRect.push_back(Vector2d(boxx, 0));
     boundingRect.push_back(Vector2d(boxx, boxy));
@@ -197,31 +301,13 @@ void Beamsearch::work(int beamWidth) {
         }
         std::cout << std::endl;
     }
-    geometry_layer_output(bestSolution);
-}
-
-int Beamsearch::run()
-{
-    get_more_geometry();
-    work(3);
-    /*geometry_layer_output();*/
-    return 0;
-}
-
-void Beamsearch::get_more_geometry()
-{
-    std::cout << "请输入处理原件的垂直截面的x，y" << endl;//如问题
-    cin >> boxx >> boxy;
-    std::cout << "要加入几个几何结构类型或者你要加入几个结构文件" << endl;
-    int n;
-    cin >> n;
-    while (n--)
-    {
-        get_points_to_polygon();
-    }
+    if (bestSolution.empty())cout << "无法生成解决方案！" << endl;
+    else geometry_layer_output(bestSolution);
 }
 
 void Beamsearch::get_points_to_polygon() {
+    std::cout << "请输入处理原件的垂直截面的x，y" << endl;//如问题
+    cin >> boxx >> boxy;
     std::cout << "如果你想加载已有的几何结构，请输入‘1’；你要创建新的几何结构，请输入‘2’:";
     int choose;
     cin >> choose;//choose决定你是要创建还是加载
@@ -252,9 +338,6 @@ void Beamsearch::get_points_to_polygon() {
                 std::reverse(points.begin(), points.end());
             }
             polygons.push_back(points);
-            std::cout << "Polygon Vertices:" << endl;
-            for (auto it = points.begin(); it != points.end(); ++it)
-                std::cout << "(" << (*it).x << ", " << (*it).y << ")" << endl;
         }
 
         infile.close();
@@ -287,26 +370,24 @@ void Beamsearch::get_points_to_polygon() {
 
 std::vector<Vector2d1> Beamsearch::perior_geometry_put()
 {
-    std::vector<Vector2d1> ans;
-    vector<int> tt;
-    std::cout << "图层加入加几个图" << endl;
-    int n; cin >> n;
-    while (n--) {
-        std::cout << "加入的几何结构类型为：" << endl;
-        int type;
-        cin >> type;
-        if (type > polygons.size()) {
-            std::cout << "没有该类型的几何结构哦" << endl;
-            n++;
-            continue;
+    std::vector<Vector2d1> ans = polygons;
+    std::cout << "图形种类加入是否重复" << endl;
+    bool ques;
+    cin >> ques;
+    if (ques) {
+        std::cout << "重复的有几个" << endl;
+        int n; cin >> n;
+        while (n--) {
+            int type;
+            cin >> type;
+            if (type > polygons.size()) {
+                std::cout << "没有该类型的几何结构哦，请重新输入" << endl;
+                n++;
+                continue;
+            }
+            Vector2d1 temp = polygons[type - 1];
+            ans.push_back(temp);
         }
-        Vector2d1 temp = polygons[type - 1];
-        ans.push_back(temp);
-        tt.push_back(type);
-    }
-    std::cout << "成功, 目前加入有：" << endl;
-    for (auto pt : tt) {
-        cout << "种类型为" << pt << " 的元件" << endl;
     }
     return ans;
 }
