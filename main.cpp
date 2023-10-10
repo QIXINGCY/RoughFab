@@ -4,5 +4,5 @@
 
 int main() {
 	Beamsearch a;
-	a.run();
+	a.test();
 }
