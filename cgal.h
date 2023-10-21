@@ -1,10 +1,99 @@
 #ifndef CGAL_ONCE
 #define CGAL_ONCE
 #pragma once
-#include <pgl_functs.hpp>
+#include <iostream>
+#include <vector>
+#include <windows.h>
+#include <direct.h>
+#include <tchar.h>
+#include <string>
+#include "glm/glm.hpp"
 using namespace std;
-using namespace PGL;
 namespace PPGL {
+
+template <typename datum>
+using Vector1 = std::vector<datum>;
+
+template <typename datum>
+using Vector2 = std::vector<std::vector<datum>>;
+
+template <typename datum>
+using Vector3 = std::vector<std::vector<std::vector<datum>>>;
+
+typedef glm::highp_dvec2 Vector2d;
+typedef glm::highp_dvec3 Vector3d;
+typedef glm::highp_ivec2 Vector2i;
+typedef glm::highp_ivec3 Vector3i;
+
+typedef Vector1<Vector2d> Vector2d1;
+typedef Vector2<Vector2d> Vector2d2;
+typedef Vector3<Vector2d> Vector2d3;
+
+typedef Vector1<Vector3d> Vector3d1;
+typedef Vector2<Vector3d> Vector3d2;
+typedef Vector3<Vector3d> Vector3d3;
+
+typedef Vector1<bool> Vector1b1;
+typedef Vector2<bool> Vector1b2;
+typedef Vector3<bool> Vector1b3;
+
+typedef Vector1<int> Vector1i1;
+typedef Vector2<int> Vector1i2;
+typedef Vector3<int> Vector1i3;
+
+typedef Vector1<double> Vector1d1;
+typedef Vector2<double> Vector1d2;
+typedef Vector3<double> Vector1d3;
+
+typedef Vector1<std::string> VectorStr1;
+typedef Vector2<std::string> VectorStr2;
+typedef Vector3<std::string> VectorStr3;
+
+typedef Vector1<Vector2i> Vector2i1;
+typedef Vector2<Vector2i> Vector2i2;
+typedef Vector3<Vector2i> Vector2i3;
+
+typedef Vector1<Vector3i> Vector3i1;
+typedef Vector2<Vector3i> Vector3i2;
+typedef Vector3<Vector3i> Vector3i3;
+
+typedef Vector1<std::pair<int, int>> VectorPI1;
+typedef Vector2<std::pair<int, int>> VectorPI2;
+typedef Vector3<std::pair<int, int>> VectorPI3;
+
+typedef Vector1<std::pair<bool, bool>> VectorPB1;
+typedef Vector2<std::pair<bool, bool>> VectorPB2;
+typedef Vector3<std::pair<bool, bool>> VectorPB3;
+
+typedef std::tuple<int, int, int> TI3;
+typedef Vector1<std::tuple<int, int, int>> VectorTI3;
+
+static HMODULE LoadHMODULE(const string& dll_path)
+{
+	struct stat buffer;
+	if (!(stat(dll_path.c_str(), &buffer) == 0))
+	{
+		char tmp[256];
+		if (_getcwd(tmp, 256)) {};
+		std::string root_path = std::string(tmp);
+
+		std::string str;
+		str += "The dll does not exist: " + dll_path + "; \n";
+		str += "The current running directory : " + root_path + "; \n";
+		str += "Please gurrentee the dll is in the right place; \n";
+		std::cerr << str << std::endl;
+	}
+
+	HMODULE hModule = LoadLibraryA(LPCSTR(dll_path.c_str()));
+	if (!hModule)
+	{
+		DWORD dw = GetLastError(); // returns 0xc1 (193)
+		std::cerr << "LoadLibrary failed with error code " + std::to_string(dw) << std::endl;
+	}
+	else
+		std::cerr << "LoadLibrary success\n";
+	return hModule;
+};
 //Project p onto the planar surface of 3d triangle
 //Checking the position relationship between the p and 3d triangle
 //face: 3d triangle
@@ -14,7 +103,10 @@ namespace PPGL {
 typedef  void (*CGAL_Test_PGL)(const Vector3d& n, const char* str, const char* char_);
 //implementation in "io.cpp"
 //####################################################################################
-typedef  void (*CGAL_Vector_Base)(const Vector3d& n, Vector3d&);
+//Usage: Get a vector which is perpenticular to the input vector;
+//Input: input vector "n"; 
+//Output: output vector "r";
+typedef  void (*CGAL_Vector_Base)(const Vector3d& n, Vector3d& r);
 //implementation in "twoD.cpp"
 //####################################################################################
 typedef  double (*CGAL_2D_Distance_Point_Point)(const Vector2d& p_0, const Vector2d& p_1);
@@ -40,6 +132,7 @@ typedef  bool (*CGAL_2D_Intersection_Segment_Segment)(const Vector2d& s_0_s, con
 typedef  bool (*CGAL_2D_Intersection_Line_Line)(const Vector2d& s_0_s, const Vector2d& s_0_e, const Vector2d& s_1_s, const Vector2d& s_1_e, Vector2d& inter);
 typedef  bool (*CGAL_2D_Intersection_Segment_Line)(const Vector2d& s_s, const Vector2d& s_e, const Vector2d& l_s, const Vector2d& l_e, Vector2d& inter);
 typedef  bool (*CGAL_2D_Intersection_Segment_Polygon)(const Vector2d& s_s, const Vector2d& s_e, const Vector2d1& p);
+typedef  bool (*CGAL_2D_Intersection_Polygon_Polygon)(const Vector2d1 & p1, const Vector2d1 & p2);
 typedef  bool (*CGAL_2D_Polygon_Is_Clockwise_Oriented)(const Vector2d1& ps);
 typedef  double (*CGAL_2D_Two_Polygons_Union)(const Vector2d1& poly_0, const Vector2d1& poly_1, Vector2d2& inter_polygons);
 typedef  double (*CGAL_2D_Two_Polygons_Intersection)(const Vector2d1& poly_0, const Vector2d1& poly_1);
@@ -171,7 +264,7 @@ typedef  void (*CGAL_Mesh_Laplace_Smooth_C1)(const char* in_path, const char* ou
 typedef  void (*CGAL_3D_Triangle_Mesh_Vecs_Neighbors)(Vector3d1& vecs, std::vector<int>& face_id_0, std::vector<int>& face_id_1, std::vector<int>& face_id_2, std::vector<std::vector<int>>& neighs);
 typedef  void (*CGAL_Mesh_Laplace_Smooth_C2)(Vector3d1& vecs, std::vector<int>& face_id_0, std::vector<int>& face_id_1, std::vector<int>& face_id_2, const int laplace_nb);
 typedef  void (*CGAL_3D_Triangle_Mesh_Vecs_Faces)(Vector3d1& vecs, std::vector<int>& face_id_0, std::vector<int>& face_id_1, std::vector<int>& face_id_2, std::vector<std::vector<int>>& surface_vectices_to_face);
-typedef  void (*CGAL_3D_Triangle_Mesh_Vecs_Neighbor_Edges)(Vector3d1& vecs, std::vector<int>& face_id_0, std::vector<int>& face_id_1, std::vector<int>& face_id_2, std::vector<std::vector<std::vector<int>>>& surface_vectices_to_neighbor_edges);
+typedef  void (*CGAL_3D_Triangle_Mesh_Vecs_Neighbor_Edges)(Vector3d1& vecs, std::vector<int>& face_id_0, std::vector<int>& face_id_1, std::vector<int>& face_id_2, Vector1i3& surface_vectices_to_neighbor_edges);
 typedef  void (*CGAL_Mesh_Laplace_Smooth_by_Curvature)(Vector3d1& vecs, std::vector<int>& face_id_0, std::vector<int>& face_id_1, std::vector<int>& face_id_2, double& low_curvature);
 typedef  void (*CGAL_Mesh_Loop_Subdivision_Own_Version)(const char* in_path, const int& step, const char* out_path, const int& laplace_nb);
 typedef  void (*CGAL_Rotation_Obj)(const char* path, const double& angle, const Vector3d& axis);
@@ -217,10 +310,13 @@ class CGALPL
 	public:
 	CGALPL()
 	{
-		hModule = Functs::LoadHMODULE("ppgl.dll");
+		hModule = LoadHMODULE("ppgl.dll");
 		CGAL_Test_PGL_C = (CGAL_Test_PGL)GetProcAddress(hModule, "CGAL_Test_PGL");
 		//implementation in "io.cpp"
 		//####################################################################################
+		//Usage: Get a vector which is perpenticular to the input vector;
+		//Input: input vector "n"; 
+		//Output: output vector "r";
 		CGAL_Vector_Base_C = (CGAL_Vector_Base)GetProcAddress(hModule, "CGAL_Vector_Base");
 		//implementation in "twoD.cpp"
 		//####################################################################################
@@ -247,6 +343,7 @@ class CGALPL
 		CGAL_2D_Intersection_Line_Line_C = (CGAL_2D_Intersection_Line_Line)GetProcAddress(hModule, "CGAL_2D_Intersection_Line_Line");
 		CGAL_2D_Intersection_Segment_Line_C = (CGAL_2D_Intersection_Segment_Line)GetProcAddress(hModule, "CGAL_2D_Intersection_Segment_Line");
 		CGAL_2D_Intersection_Segment_Polygon_C = (CGAL_2D_Intersection_Segment_Polygon)GetProcAddress(hModule, "CGAL_2D_Intersection_Segment_Polygon");
+		CGAL_2D_Intersection_Polygon_Polygon_C = (CGAL_2D_Intersection_Polygon_Polygon)GetProcAddress(hModule, "CGAL_2D_Intersection_Polygon_Polygon");
 		CGAL_2D_Polygon_Is_Clockwise_Oriented_C = (CGAL_2D_Polygon_Is_Clockwise_Oriented)GetProcAddress(hModule, "CGAL_2D_Polygon_Is_Clockwise_Oriented");
 		CGAL_2D_Two_Polygons_Union_C = (CGAL_2D_Two_Polygons_Union)GetProcAddress(hModule, "CGAL_2D_Two_Polygons_Union");
 		CGAL_2D_Two_Polygons_Intersection_C = (CGAL_2D_Two_Polygons_Intersection)GetProcAddress(hModule, "CGAL_2D_Two_Polygons_Intersection");
@@ -429,6 +526,9 @@ class CGALPL
 	CGAL_Test_PGL CGAL_Test_PGL_C;
 	//implementation in "io.cpp"
 	//####################################################################################
+	//Usage: Get a vector which is perpenticular to the input vector;
+	//Input: input vector "n"; 
+	//Output: output vector "r";
 	CGAL_Vector_Base CGAL_Vector_Base_C;
 	//implementation in "twoD.cpp"
 	//####################################################################################
@@ -455,6 +555,7 @@ class CGALPL
 	CGAL_2D_Intersection_Line_Line CGAL_2D_Intersection_Line_Line_C;
 	CGAL_2D_Intersection_Segment_Line CGAL_2D_Intersection_Segment_Line_C;
 	CGAL_2D_Intersection_Segment_Polygon CGAL_2D_Intersection_Segment_Polygon_C;
+	CGAL_2D_Intersection_Polygon_Polygon CGAL_2D_Intersection_Polygon_Polygon_C;
 	CGAL_2D_Polygon_Is_Clockwise_Oriented CGAL_2D_Polygon_Is_Clockwise_Oriented_C;
 	CGAL_2D_Two_Polygons_Union CGAL_2D_Two_Polygons_Union_C;
 	CGAL_2D_Two_Polygons_Intersection CGAL_2D_Two_Polygons_Intersection_C;

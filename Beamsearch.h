@@ -12,6 +12,8 @@
 #include <CGAL/squared_distance_2.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/convex_hull_2.h>
+
+
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
@@ -27,12 +29,18 @@ typedef CGAL::Delaunay_triangulation_2<K> Delaunay;
 typedef K::FT FT;  // 浮点数类型
 typedef K::Segment_2 Segment;  // 二维线段类型
 
+typedef CGAL::Alpha_shape_vertex_base_2<K> Vb;  // Alpha Shape 顶点类型
+typedef CGAL::Alpha_shape_face_base_2<K> Fb;    // Alpha Shape 面类型
+typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;  // 三角剖分数据结构类型
+typedef CGAL::Delaunay_triangulation_2<K, Tds> Triangulation_2;  // Delaunay 三角剖分类型
+typedef CGAL::Alpha_shape_2<Triangulation_2> Alpha_shape_2;  // Alpha Shape 类型
+typedef Alpha_shape_2::Alpha_shape_edges_iterator Alpha_shape_edges_iterator;  // Alpha Shape 边迭代器
+
 using namespace std;
 using namespace PGL;
 using namespace PPGL;
 
 double boxx, boxy;
-
 
 
 
@@ -175,7 +183,28 @@ void findPolygons(vector<Segment_2> edges, vector<vector<Segment_2>>& polys) {
         polys.push_back(poly);
     }
 }
+Polygon_2 Convert_Vector2d1_to_Polygon_2(Vector2d1 v2d)
+{
+    vector<Point_2> pts;
+    for (auto itt = v2d.begin(); itt != v2d.end(); itt++)
+    {
+        Point_2 temp((*itt).x, (*itt).y);
+        pts.push_back(temp);
+    }
+    Polygon_2 target(pts.begin(), pts.end());
+    return target;
+}
 
+Vector2d1 Convert_Polygon_2_to_Vector2d1(Polygon_2 p2)
+{
+    Vector2d1 target;
+    for (auto itt = p2.begin(); itt != p2.end(); itt++)
+    {
+        Vector2d temp((*itt).x(), (*itt).y());
+        target.push_back(temp);
+    }
+    return target;
+}
 struct SegmentComparator {
     bool operator()(const Segment_2& a, const Segment_2& b) const {
         // 实现比较逻辑，返回 true 如果 seg1 应该排在 seg2 之前
@@ -200,7 +229,6 @@ bool comPoints(const Point_2& p1, const Point_2& p2) {
     }
     return p1.y() < p2.y();
 }
-
 vector<Polygon_2> get_triangulation_net(vector<Point_2> point_set, vector<Polygon_2> py)
 {
     Delaunay triangulation;
@@ -267,22 +295,24 @@ vector<Polygon_2> get_triangulation_net(vector<Point_2> point_set, vector<Polygo
     for (auto itt = ans.begin(); itt != ans.end(); itt++)
     {
         vector<Point_2> pots;
-        cv::Mat image(boxy + 200, boxx + 200, CV_8UC3, cv::Scalar(255, 255, 255));
+        //cv::Mat image(boxy + 200, boxx + 200, CV_8UC3, cv::Scalar(255, 255, 255));
         for (auto it = (*itt).begin(); it != (*itt).end(); it++)
         {
             Segment_2 edge = (*it);
             pots.push_back(Point_2(edge.source().x(), edge.source().y()));
-            cv::line(image, cv::Point(edge[0].x() + 100, edge[0].y() + 100),
-                cv::Point(edge[1].x() + 100, edge[1].y() + 100), cv::Scalar(0, 0, 0), 1);
+            /*cv::line(image, cv::Point(edge[0].x() + 100, edge[0].y() + 100),
+                cv::Point(edge[1].x() + 100, edge[1].y() + 100), cv::Scalar(0, 0, 0), 1);*/
         }
         Polygon_2 wewant(pots.begin(), pots.end());
         true_ans.push_back(wewant);
         // 显示图像
-        cv::imshow("Image with Point", image);
-        cv::waitKey(0);
+        /*cv::imshow("Image with Point", image);
+        cv::waitKey(0);*/
     }
     return true_ans;
 }
+
+
 
 struct Candidate {
     std::vector<Vector2d1> polygons;  // 解决方案中的多边形集合
@@ -313,25 +343,46 @@ public:
 };
 
 double Beamsearch::calculateScore(const std::vector<Vector2d1>& polygons) {
-    double totalArea = 0.0;
-    double maxX = 0.0;
-    double maxY = 0.0;
-    double minX = 100000000.0;
-    double minY = 100000000.0;
-    for (const Vector2d1 poly : polygons) {
-        double need_area = PL().CGAL_2D_Polygon_Area_C(poly);
-        totalArea += std::abs(need_area);
-        for (const auto& vertex : poly) {
-            maxY = std::max(maxY, vertex.y);
-            maxX = std::max(maxX, vertex.x);
-            minY = std::min(minY, vertex.y);
-            minX = std::min(minX, vertex.x);
+    double areas = 0;
+    double score = 0;
+    vector<Polygon_2> pys;
+    vector<Polygon_2> ans;
+    vector<Vector2d1> output;
+    for (auto it = polygons.begin(); it != polygons.end(); it++)
+    {
+        pys.push_back(Convert_Vector2d1_to_Polygon_2(*it));
+    }
+    vector<Point_2> getit;
+    CGAL_2D_Polygon_Dart_Sampling_b(pys, 0.5, getit, 100);
+    ans = get_triangulation_net(getit, pys);
+    for (auto it = ans.begin(); it != ans.end(); it++) {
+        output.push_back(Convert_Polygon_2_to_Vector2d1(*it));
+    }
+    //geometry_layer_output(output);
+    for (auto it = ans.begin(); it != ans.end(); it++)
+    {
+        if (abs(it->area()) < 500) {
+            continue;
+        }
+        else {
+            areas += it->bbox().x_span() * it->bbox().y_span();
+            cout << areas << "   " << it->bbox().x_span()<<"   "<< it->bbox().y_span()<< endl;
+            double length = 0;
+
+            for (auto itt = it->edges_begin(); itt != it->edges_end(); itt++)
+            {
+                length += sqrt(itt->squared_length());
+            }
+            score += it->bbox().x_span() * it->bbox().y_span() * (it->bbox().x_span() + it->bbox().y_span()) * 2 / (length);
         }
     }
-    // 计算解决方案中所有多边形面积除以总面积获得的面积占比作为评分
-    double maxYScaledArea = (maxY - minY) * (maxX - minX);
-    return totalArea / maxYScaledArea;
+    cout << areas << "safafaf6a56" << endl;
+    if (areas == 0)return 0;
+    score /= areas;
+    return score;
 }
+
+
 
 bool Beamsearch::doPolygonsCollide2(const Vector2d1& poly1, const vector<Vector2d1>& poly2) {//碰撞检测，多边形求交
     for (const Vector2d1& one_polygon : poly2) {
@@ -423,7 +474,6 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
                 Functs::GetBoundingBox(finalPolygon, bomin, bomax);
                 double bottom_distance = bomin.y;
 
-
                 bool judge = 1;
                 double pymin = bomin.y;
                 while (bottom_distance > 10)
@@ -457,7 +507,7 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
                 double newScore = calculateScore(newPolygons);
                 cout << newScore << endl;//输出评分
                 // 将新的解决方案添加到候选集合中
-                geometry_layer_output(newPolygons);
+                //geometry_layer_output(newPolygons);
                 nextCandidates.push(Candidate(newPolygons, newScore, temp));
                 // 保持候选队列的大小不超过束宽度
                 while (nextCandidates.size() > beamWidth) {
@@ -469,6 +519,7 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
         candidates = nextCandidates;
     }
     // 获取最佳的候选解决方案
+    cout << "score" << candidates.top().score << endl;
     return candidates.top().polygons;
 }
 
@@ -524,8 +575,8 @@ void Beamsearch::test() {
 }
 
 void Beamsearch::get_points_to_polygon() {
-    boxx = 800;
-    boxy = 800;
+    boxx = 700;
+    boxy = 1000;
     string address = "test.txt";
     ifstream infile;
     infile.open(address);

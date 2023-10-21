@@ -3,6 +3,27 @@ cmake_minimum_required(VERSION 3.16)
 #项目名称
 project(RoughFab)
 
+list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
+
+# Libigl
+include(libigl)
+
+# Enable the target igl::glfw
+igl_include(glfw)
+#other modules
+#igl_include(embree)
+#igl_include(opengl)
+#igl_include(stb)
+#igl_include(predicates)
+#igl_include(xml)
+#igl_include(copyleft cgal)
+#igl_include(copyleft comiso)
+#igl_include(copyleft cork)
+#igl_include(copyleft tetgen)
+#igl_include(restricted matlab)
+#igl_include(restricted mosek)
+#igl_include(restricted triangle)
+
 # 在CMake中查找vcpkg的安装目录
 set(VCPKG_ROOT "/path/to/vcpkg" CACHE PATH "Vcpkg root directory")
 #opencv路径
@@ -11,7 +32,7 @@ set(OpenCV_DIR "E:/Code/library/opencv/build")
 set(CMAKE_TOOLCHAIN_FILE "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" CACHE STRING "Vcpkg toolchain file")
 set(CMAKE_PREFIX_PATH ${VCPKG_ROOT}/installed/x64-windows)  
 set(CGAL_DIR E:/library/CGAL/CGAL-5.5.2)
-set(GMP_DIR ${VCPKG_ROOT}/installed/x64-windows/share/gmp)
+#set(GMP_DIR ${VCPKG_ROOT}/installed/x64-windows/share/gmp)
 #set(ENV{PKG_CONFIG_PATH} ${VCPKG_ROOT}/installed/x64-windows/share/pkgconfig/bin)
 
 # Add your project files
@@ -20,6 +41,10 @@ file(GLOB SRC_FILES *.cpp)
 #添加可执行文件
 add_executable(${PROJECT_NAME} main.cpp beamsearch.h)
 add_executable(test test.cpp)
+
+target_link_libraries(${PROJECT_NAME} PUBLIC 
+	igl::glfw
+	)
 
 # 查找并链接OpenCV库
 find_package(OpenCV REQUIRED)
@@ -30,8 +55,8 @@ find_package(CGAL REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE CGAL::CGAL)
 
 #链接GMP
-find_package(GMP REQUIRED)
-target_link_libraries(${PROJECT_NAME} PRIVATE ${GMP_LIBRARIES})
+#find_package(GMP REQUIRED)
+#target_link_libraries(${PROJECT_NAME} PRIVATE ${GMP_LIBRARIES})
 
 include(ExternalProject)
 ExternalProject_Add(
