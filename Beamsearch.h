@@ -1,3 +1,8 @@
+#include <CGAL/Exact_predicates_inexact_constructions_kernel.h>
+#include <CGAL/Constrained_Delaunay_triangulation_2.h>
+#include <CGAL/Triangulation_conformer_2.h>
+#include <CGAL/Partition_traits_2.h>
+#include <CGAL/partition_2.h>
 #include "pgl_functs.hpp"
 #include "RI.hpp"
 #include "tinyxml2.hpp"
@@ -12,7 +17,7 @@
 #include <CGAL/squared_distance_2.h>
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/convex_hull_2.h>
-
+#include <igl/opengl/glfw/Viewer.h>
 
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
@@ -35,14 +40,117 @@ typedef CGAL::Triangulation_data_structure_2<Vb, Fb> Tds;  // 三角剖分数据结构类
 typedef CGAL::Delaunay_triangulation_2<K, Tds> Triangulation_2;  // Delaunay 三角剖分类型
 typedef CGAL::Alpha_shape_2<Triangulation_2> Alpha_shape_2;  // Alpha Shape 类型
 typedef Alpha_shape_2::Alpha_shape_edges_iterator Alpha_shape_edges_iterator;  // Alpha Shape 边迭代器
+typedef CGAL::Exact_predicates_tag Itag;
+typedef CGAL::Constrained_Delaunay_triangulation_2<K, CGAL::Default, Itag> CDT;
+typedef CDT::Point_2 Point;
 
+typedef CGAL::Partition_traits_2<K> Traits;
+typedef Traits::Polygon_2 Polygon2;
+typedef std::list<Polygon2> Polygon_list;
 using namespace std;
 using namespace PGL;
 using namespace PPGL;
 
 double boxx, boxy;
 
+// 结构体 TriIndex 用于表示三角形的索引
+struct TriIndex {
+    unsigned value[3];
 
+    TriIndex() {
+        for (unsigned i = 0; i < 3; ++i)
+            value[i] = -1;
+    }
+
+    TriIndex(unsigned i1, unsigned i2, unsigned i3) {
+        value[0] = i1;
+        value[1] = i2;
+        value[2] = i3;
+    }
+
+    unsigned& operator[](unsigned i) {
+        return value[i];
+    }
+};
+
+// 使用 TriIndex 的 vector 类型来表示多个三角形的索引
+typedef std::vector<TriIndex> TriIndices;
+
+unsigned findVertexIndex(Point pt, std::vector<Point> points) {
+    std::vector<Point>::iterator item = std::find(points.begin(), points.end(), pt);
+    if (item != points.end()) {
+        unsigned pos = std::distance(points.begin(), item);
+        return pos;
+    }
+    return -1;
+}
+
+TriIndices GetTriIndices(std::vector<Point> points) {
+    // 先进行凹多边形划分为凸多边形集合
+    Polygon_list polys;
+    CGAL::approx_convex_partition_2(points.begin(), points.end(), std::back_inserter(polys));
+
+    CDT cdt;
+    Polygon2 poly;
+    unsigned vertIndex;
+    TriIndex triIndex;
+    TriIndices triIndices;
+
+    for (Polygon_list::iterator it = polys.begin(); it != polys.end(); ++it) {
+        // 约束三角剖分
+        cdt.clear();
+        cdt.insert(it->vertices_begin(), it->vertices_end());
+
+        for (CDT::Finite_faces_iterator it = cdt.finite_faces_begin(); it != cdt.finite_faces_end(); ++it) {
+            for (unsigned i = 0; i < 3; ++i) {
+                Point point = it->vertex(i)->point();
+                vertIndex = findVertexIndex(point, points);
+                triIndex[i] = vertIndex;
+            }
+            triIndices.push_back(triIndex);
+        }
+    }
+    return triIndices;
+}
+
+vector<vector<pair<Eigen::MatrixXd, Eigen::MatrixXi>>> Convert_Polygons_to_Matrix(vector<vector<Vector2d1>> process_solutions)
+{
+    vector<vector<pair<Eigen::MatrixXd, Eigen::MatrixXi>>> need;
+
+    for (auto polygons : process_solutions)
+    {
+        vector<pair<Eigen::MatrixXd, Eigen::MatrixXi>> way;
+
+        for (auto polygon : polygons)
+        {
+            Eigen::MatrixXd V(polygon.size(), 2);
+            int i = 0;
+            vector<Point> a;
+            for (auto point : polygon)
+            {
+                V(i, 0) = point.x;
+                V(i, 1) = point.y;
+                i++;
+                a.push_back(Point(point.x, point.y));
+            }
+            TriIndices b = GetTriIndices(a);
+            Eigen::MatrixXi F(b.size(), 3);
+            int j = 0;
+            for (auto face : b)
+            {
+                F(j, 0) = face.value[0];
+                F(j, 1) = face.value[1];
+                F(j, 2) = face.value[2];
+                j++;
+            }
+            pair<Eigen::MatrixXd, Eigen::MatrixXi> we(V, F);
+            way.push_back(we);
+        }
+        need.push_back(way);
+    }
+
+    return need;
+}
 
 double pointToPolygonDist(const Point_2& p, const Polygon_2& polygon) {//点到多边形的距离;检验完成，没报错
     int count = 0;
@@ -331,6 +439,8 @@ struct Candidate {
 class Beamsearch {
 public:
     vector<Vector2d1> polygons;
+    vector<vector<Vector2d1>> process_solutions;
+    vector<double> score;
     double calculateScore(const std::vector<Vector2d1>& polygons);
     bool doPolygonsCollide2(const Vector2d1& poly1, const vector<Vector2d1>& poly2);
     Vector2d1 translatePolygon(const Vector2d1& polygon, double dx, double dy);
@@ -340,8 +450,12 @@ public:
     void get_points_to_polygon();
     std::vector<Vector2d1> perior_geometry_put();
     void geometry_layer_output(vector<Vector2d1> a);
+    void geometry_layer_output_libigl(vector<Vector2d1> a);
+    vector<double> GetScore();
 };
-
+vector<double> Beamsearch::GetScore() {
+    return score;
+}
 double Beamsearch::calculateScore(const std::vector<Vector2d1>& polygons) {
     double areas = 0;
     double score = 0;
@@ -366,7 +480,6 @@ double Beamsearch::calculateScore(const std::vector<Vector2d1>& polygons) {
         }
         else {
             areas += it->bbox().x_span() * it->bbox().y_span();
-            cout << areas << "   " << it->bbox().x_span()<<"   "<< it->bbox().y_span()<< endl;
             double length = 0;
 
             for (auto itt = it->edges_begin(); itt != it->edges_end(); itt++)
@@ -376,7 +489,6 @@ double Beamsearch::calculateScore(const std::vector<Vector2d1>& polygons) {
             score += it->bbox().x_span() * it->bbox().y_span() * (it->bbox().x_span() + it->bbox().y_span()) * 2 / (length);
         }
     }
-    cout << areas << "safafaf6a56" << endl;
     if (areas == 0)return 0;
     score /= areas;
     return score;
@@ -480,7 +592,6 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
                 {
                     pymin -= bottom_distance;
                     if (pymin < 0) {
-                        cout << "发生边界碰撞" << endl;
                         pymin += bottom_distance;
                         bottom_distance /= 2.0;
                         continue;
@@ -508,6 +619,8 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
                 cout << newScore << endl;//输出评分
                 // 将新的解决方案添加到候选集合中
                 //geometry_layer_output(newPolygons);
+                score.push_back(newScore);
+                process_solutions.push_back(newPolygons);
                 nextCandidates.push(Candidate(newPolygons, newScore, temp));
                 // 保持候选队列的大小不超过束宽度
                 while (nextCandidates.size() > beamWidth) {
@@ -549,28 +662,7 @@ void Beamsearch::work() {
 
 void Beamsearch::test() {
     get_points_to_polygon();
-    vector<Polygon_2> pys;
-    vector<Polygon_2> nulls;
-    for (auto it = polygons.begin(); it != polygons.end(); it++)
-    {
-        std::vector<Point_2> points;
-        for (auto itt = (*it).begin(); itt != (*it).end(); itt++)
-        {
-            double x, y;
-            x = itt->x;
-            y = itt->y;
-            points.push_back(Point_2(x, y));
-        }
-        Polygon_2 plg(points.begin(), points.end());
-        pys.push_back(plg);
-    }
-    vector<Point_2> getit;
-    CGAL_2D_Polygon_Dart_Sampling_b(pys, 0.5, getit, 100);
-    //FT alpha = 0.001* sqrt(boxx * boxx + boxy * boxy);
-    //vector<Point_2> ans = computeAlphaShape(getit, 75);
-    //cv::Mat image(boxy, boxx , CV_64FC3, cv::Scalar(0, 0, 0));
-    //cv::Scalar color(0, 0, 255);
-    get_triangulation_net(getit, pys);
+    geometry_layer_output_libigl(polygons);
 
 }
 
@@ -722,4 +814,7 @@ void Beamsearch::geometry_layer_output(vector<Vector2d1> a) {
     cv::imshow("Polygons", symmetric_image);
     cv::waitKey(0);
     return;
+}
+void Beamsearch::geometry_layer_output_libigl(vector<Vector2d1> a) {
+
 }

@@ -12,7 +12,7 @@ include(libigl)
 igl_include(glfw)
 #other modules
 #igl_include(embree)
-#igl_include(opengl)
+igl_include(opengl)
 #igl_include(stb)
 #igl_include(predicates)
 #igl_include(xml)
@@ -39,11 +39,12 @@ set(CGAL_DIR E:/library/CGAL/CGAL-5.5.2)
 file(GLOB SRC_FILES *.cpp)
 
 #添加可执行文件
-add_executable(${PROJECT_NAME} main.cpp beamsearch.h)
+add_executable(${PROJECT_NAME} main.cpp beamsearch.h OutputWithLibigl.h)
 add_executable(test test.cpp)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC 
 	igl::glfw
+	igl::opengl
 	)
 
 # 查找并链接OpenCV库
