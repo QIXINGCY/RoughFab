@@ -18,7 +18,8 @@
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/convex_hull_2.h>
 #include <igl/opengl/glfw/Viewer.h>
-
+#include<io.h>
+#include<direct.h>
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
@@ -490,6 +491,7 @@ struct Candidate {
 
 class Beamsearch {
 public:
+    string image_path = "image_outputs";
     Tree gml_tree;
     vector<Vector2d1> polygons;
     vector<vector<Vector2d1>> process_solutions;
@@ -741,7 +743,20 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
     return candidates.top().polygons;
 }
 
+void create_folder(string a) {
+    string folderPath = "./" + a;
+    CreateDirectory(folderPath.c_str(), NULL);
+    return;
+}
+
 void Beamsearch::work() {
+    string output_filename = image_path;
+    create_folder(output_filename);
+    SYSTEMTIME st;
+    GetSystemTime(&st);
+    string time_path = image_path + "/" + to_string(st.wYear) + "_" + to_string(st.wMonth) + "_" + to_string(st.wDay) + "_" + to_string(st.wHour) + "_" + to_string(st.wMinute) + "_" + to_string(st.wSecond);
+    create_folder(time_path);
+    this->image_path = "./" + time_path;
     get_points_to_polygon();
     Vector2d1 boundingRect;
     int beamWidth = 3;
@@ -921,8 +936,8 @@ void Beamsearch::geometry_layer_output(vector<Vector2d1> a) {
 }
 void Beamsearch::geometry_layer_save(vector<Vector2d1> a,int num,double score) {
     // 计算图像的尺寸
-    string path = "D:\\develop\\haisens_group\\weputtheproject\\RoughFab\\build\\image_outputs";
-    path = path + "\\节点" + to_string(num) +"评分：" + to_string(score) + "\.jpg";
+    string path = this->image_path;
+    path = path + "/节点" + to_string(num) +"评分：" + to_string(score) + "\.jpg";
     cout << path << endl;
     // 创建一个黑色的图像
     cv::Mat rightimage(boxy, boxx / 2, CV_64FC3, cv::Scalar(0, 0, 0));
