@@ -420,14 +420,66 @@ vector<Polygon_2> get_triangulation_net(vector<Point_2> point_set, vector<Polygo
     return true_ans;
 }
 
+class TreeNode {
+public:
+    int id;
+    std::vector<TreeNode*> children;
 
+    TreeNode(int tid) : id(tid) {}
+};
+
+class Tree {
+public:
+    TreeNode* root;
+
+    Tree() : root(nullptr) {}
+
+    void insert(int parentId, int Id) {
+        if (root == nullptr) {
+            if (parentId == -1) {
+                root = new TreeNode(Id);
+            }
+            return;
+        }
+
+        insertRec(root, parentId, Id);
+    }
+
+    void insertRec(TreeNode* node, int parentId, int Id) {
+        if (node->id == parentId) {
+            node->children.push_back(new TreeNode(Id));
+        }
+        else {
+            for (TreeNode* child : node->children) {
+                insertRec(child, parentId, Id);
+            }
+        }
+    }
+
+    void printTree(TreeNode* node) {
+        if (node == nullptr) {
+            return;
+        }
+
+        std::cout << node->id << ": ";
+        for (TreeNode* child : node->children) {
+            std::cout << child->id << " ";
+        }
+        std::cout << std::endl;
+
+        for (TreeNode* child : node->children) {
+            printTree(child);
+        }
+    }
+};
 
 struct Candidate {
+    int CandidateId = 0;
     std::vector<Vector2d1> polygons;  // 解决方案中的多边形集合
     double score;                    // 解决方案的得分
     std::set<int> typenum;          //解决方案中多边形序号
     // 构造函数
-    Candidate(const std::vector<Vector2d1>& polys, double sc, const std::set<int>& tn) : polygons(polys), score(sc), typenum(tn) {}
+    Candidate(int id, const std::vector<Vector2d1>& polys, double sc, const std::set<int>& tn) : CandidateId(id), polygons(polys), score(sc), typenum(tn) {}
     bool operator<(const Candidate& other) const {
         return score < other.score; //排序
     }
@@ -438,6 +490,7 @@ struct Candidate {
 
 class Beamsearch {
 public:
+    Tree gml_tree;
     vector<Vector2d1> polygons;
     vector<vector<Vector2d1>> process_solutions;
     vector<double> score;
@@ -450,9 +503,56 @@ public:
     void get_points_to_polygon();
     std::vector<Vector2d1> perior_geometry_put();
     void geometry_layer_output(vector<Vector2d1> a);
-    void geometry_layer_output_libigl(vector<Vector2d1> a);
+    void geometry_layer_save(vector<Vector2d1> a, int num, double score);
     vector<double> GetScore();
+    void Convert_GmlTree_To_GML();
+    void generateNodeGML(TreeNode* node, std::ofstream& outfile);
+    void generateEdgeGML(TreeNode* node, std::ofstream& outfile);
+
 };
+void Beamsearch::generateNodeGML(TreeNode* node, std::ofstream& outfile) {
+    if (node == nullptr) {
+        return;
+    }
+    outfile << "   node" << std::endl;
+    outfile << "   [" << std::endl;
+    outfile << "      id " << node->id << std::endl;
+    outfile << "   ]" << std::endl;
+    for (TreeNode* child : node->children) {
+        generateNodeGML(child, outfile);
+    }
+}
+void Beamsearch::generateEdgeGML(TreeNode* node, std::ofstream& outfile) {
+    if (node == nullptr) {
+        return;
+    }
+    for (TreeNode* child : node->children) {
+        outfile << "   edge" << std::endl;
+        outfile << "   [" << std::endl;
+        outfile << "      source " << node->id << std::endl;
+        outfile << "      target " << child->id << std::endl;
+        outfile << "   ]" << std::endl;
+        generateEdgeGML(child, outfile);
+    }
+}
+void Beamsearch::Convert_GmlTree_To_GML() {
+    std::ofstream outfile("tree.gml");
+    if (outfile.is_open()) {
+        outfile << "graph" << std::endl;
+        outfile << "[" << std::endl;
+        outfile << "   directed 0" << std::endl;
+
+        generateNodeGML(gml_tree.root, outfile);
+        generateEdgeGML(gml_tree.root, outfile);
+
+        outfile << "]" << std::endl;
+        outfile.close();
+    }
+    else {
+        std::cerr << "Unable to open file for writing." << std::endl;
+    }
+
+}
 vector<double> Beamsearch::GetScore() {
     return score;
 }
@@ -542,18 +642,19 @@ bool beamssort(const Vector2d1& poly1, const Vector2d1& poly2)
 
 std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inputPolygons, int beamWidth, const Vector2d1& boundingRect)
 {
-    std::priority_queue < Candidate, std::vector<Candidate>, greater<Candidate>> candidates;
-
+    int id = 0;
+    std::priority_queue < Candidate, std::vector<Candidate>, less<Candidate>> candidates;
+    Candidate root(id++,{}, 0.0, {});
     // 初始化一个空的候选解决方案集合
-    candidates.push(Candidate({}, 0.0, {}));
-
+    candidates.push(root);
+    gml_tree.insert(-1, 0);
     // 按照一定的优先放置顺序对输入的多边形进行排序，这里采用了按照面积从大到小排序的示例
     std::vector<Vector2d1> sortedPolygons = inputPolygons;
     std::sort(sortedPolygons.begin(), sortedPolygons.end(), beamssort);
 
     // 处理每个待放置的位置
     for (int times = 0; times < sortedPolygons.size(); times++) {
-        std::priority_queue < Candidate, std::vector<Candidate>, greater<Candidate>> nextCandidates;
+        std::priority_queue < Candidate, std::vector<Candidate>, less<Candidate>> nextCandidates;
 
         // 处理当前轮次的每个候选解决方案
         while (!candidates.empty())
@@ -616,22 +717,26 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
 
                 // 计算新的解决方案的得分
                 double newScore = calculateScore(newPolygons);
-                cout << newScore << endl;//输出评分
+                cout << "方案id" << id << ":" << newScore << endl;//输出评分
                 // 将新的解决方案添加到候选集合中
-                //geometry_layer_output(newPolygons);
+                geometry_layer_save(newPolygons,id,newScore);
                 score.push_back(newScore);
                 process_solutions.push_back(newPolygons);
-                nextCandidates.push(Candidate(newPolygons, newScore, temp));
+                gml_tree.insert(candidate.CandidateId, id);
+                Candidate son(id++, newPolygons, newScore, temp);
+                nextCandidates.push(son);
                 // 保持候选队列的大小不超过束宽度
                 while (nextCandidates.size() > beamWidth) {
                     nextCandidates.pop();
                 }
             }
         }
-
         candidates = nextCandidates;
     }
     // 获取最佳的候选解决方案
+    while (candidates.size() > 1) {
+        candidates.pop();
+    }
     cout << "score" << candidates.top().score << endl;
     return candidates.top().polygons;
 }
@@ -662,13 +767,12 @@ void Beamsearch::work() {
 
 void Beamsearch::test() {
     get_points_to_polygon();
-    geometry_layer_output_libigl(polygons);
 
 }
 
 void Beamsearch::get_points_to_polygon() {
     boxx = 700;
-    boxy = 1000;
+    boxy = 700;
     string address = "test.txt";
     ifstream infile;
     infile.open(address);
@@ -815,6 +919,38 @@ void Beamsearch::geometry_layer_output(vector<Vector2d1> a) {
     cv::waitKey(0);
     return;
 }
-void Beamsearch::geometry_layer_output_libigl(vector<Vector2d1> a) {
+void Beamsearch::geometry_layer_save(vector<Vector2d1> a,int num,double score) {
+    // 计算图像的尺寸
+    string path = "D:\\develop\\haisens_group\\weputtheproject\\RoughFab\\build\\image_outputs";
+    path = path + "\\节点" + to_string(num) +"评分：" + to_string(score) + "\.jpg";
+    cout << path << endl;
+    // 创建一个黑色的图像
+    cv::Mat rightimage(boxy, boxx / 2, CV_64FC3, cv::Scalar(0, 0, 0));
 
+    // 绘制多边形
+    for (const auto& polygon : a)
+    {
+        std::vector<cv::Point> points;
+        for (const auto& vertex : polygon)
+        {
+            int x = vertex.x;
+            int y = boxy - vertex.y;
+            cv::Point point(x, y);
+            points.push_back(point);
+        }
+        const cv::Point* pts = points.data();
+        int num_points = points.size();
+        cv::polylines(rightimage, &pts, &num_points, 1, true, cv::Scalar(255, 255, 255), 2);
+    }
+    cv::Mat leftimage;
+    cv::flip(rightimage, leftimage, 1);
+    cv::Mat symmetric_image;
+    cv::hconcat(leftimage, rightimage, symmetric_image);
+    cv::Point point1(boxx / 2, boxy);
+    cv::Point point2(boxx / 2, 0);
+    cv::line(symmetric_image, point1, point2, cv::Scalar(0, 0, 255), 1);
+    // 显示图像
+    cv::imwrite(path, symmetric_image);
+    cv::waitKey(0);
+    return;
 }
