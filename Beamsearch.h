@@ -18,6 +18,11 @@
 #include <CGAL/Constrained_Delaunay_triangulation_2.h>
 #include <CGAL/convex_hull_2.h>
 #include <igl/opengl/glfw/Viewer.h>
+<<<<<<< HEAD
+=======
+#include<io.h>
+#include<direct.h>
+>>>>>>> 0fbbd6006d1f651453b82c48574857a7544430ec
 #include <CGAL/Alpha_shape_2.h>
 #include <CGAL/Alpha_shape_vertex_base_2.h>
 #include <CGAL/Alpha_shape_face_base_2.h>
@@ -1656,11 +1661,16 @@ std::vector<Vector2d1> Beamsearch::beamSearch(const std::vector<Vector2d1>& inpu
     return candidates.top().polygons;
 }
 
+<<<<<<< HEAD
 void create_folder(string a) {//工具函数，创建文件夹
+=======
+void create_folder(string a) {
+>>>>>>> 0fbbd6006d1f651453b82c48574857a7544430ec
     string folderPath = "./" + a;
     CreateDirectory(folderPath.c_str(), NULL);
     return;
 }
+<<<<<<< HEAD
 void Beamsearch::work() {
     string output_filename = image_path;//在目前情况下，我们需要将packing变化过程的每一张图保存下来，image_path是一个文件夹地址，定义在Beamsearch类里
     create_folder(output_filename);//创建保存输出图像的文件夹
@@ -1673,6 +1683,20 @@ void Beamsearch::work() {
     //PolygonModification();//将元件进行粗料化
     Vector2d1 boundingRect;//圆柱材料2维截面的矩形
     int beamWidth = 3;//这个即beamsearch算法的束宽
+=======
+
+void Beamsearch::work() {
+    string output_filename = image_path;
+    create_folder(output_filename);
+    SYSTEMTIME st;
+    GetSystemTime(&st);
+    string time_path = image_path + "/" + to_string(st.wYear) + "_" + to_string(st.wMonth) + "_" + to_string(st.wDay) + "_" + to_string(st.wHour) + "_" + to_string(st.wMinute) + "_" + to_string(st.wSecond);
+    create_folder(time_path);
+    this->image_path = "./" + time_path;
+    get_points_to_polygon();
+    Vector2d1 boundingRect;
+    int beamWidth = 3;
+>>>>>>> 0fbbd6006d1f651453b82c48574857a7544430ec
     boundingRect.push_back(Vector2d(0, 0));
     boundingRect.push_back(Vector2d(boxx, 0));
     boundingRect.push_back(Vector2d(boxx, boxy));
@@ -1799,7 +1823,11 @@ void Beamsearch::geometry_layer_output(vector<Vector2d1> a) {
 void Beamsearch::geometry_layer_save(vector<Vector2d1> a, int num, double score) {
     // 计算图像的尺寸
     string path = this->image_path;
+<<<<<<< HEAD
     path = path + "/节点" + to_string(num) + "评分：" + to_string(score) + ".jpg";
+=======
+    path = path + "/节点" + to_string(num) +"评分：" + to_string(score) + "\.jpg";
+>>>>>>> 0fbbd6006d1f651453b82c48574857a7544430ec
     cout << path << endl;
 
     // 创建一个黑色的图像，尺寸为(boxy, boxx / 2)，数据类型为CV_64FC3，初始值为黑色
