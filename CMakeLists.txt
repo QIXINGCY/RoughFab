@@ -1,3 +1,7 @@
+#使用了libigl，opencv，需要手动下载使用cmake编译，网上有教程，opencv好像有预编译的可下载项
+#需要下载CGAL，我这里用的是5.5.2版本
+#使用了c++库管理项目--vcpkg，当时是摸索着使用cmake项目（现在想来好像不是必须使用的）
+#使用前注意更改路径信息
 #cmake最低版本
 cmake_minimum_required(VERSION 3.16)
 #项目名称
@@ -8,7 +12,7 @@ list(PREPEND CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake)
 # Libigl
 include(libigl)
 
-# Enable the target igl::glfw
+# Enable the target igl::glfw 下面的libigl的非核心库有需要可以添加
 igl_include(glfw)
 #other modules
 #igl_include(embree)
@@ -59,7 +63,9 @@ target_link_libraries(${PROJECT_NAME} PRIVATE CGAL::CGAL)
 #find_package(GMP REQUIRED)
 #target_link_libraries(${PROJECT_NAME} PRIVATE ${GMP_LIBRARIES})
 
+#外部项
 include(ExternalProject)
+#pgl，赵老师的库，项目中没有大量使用
 ExternalProject_Add(
     pgl
     PREFIX ${CMAKE_BINARY_DIR}/third_party/pgl
@@ -72,7 +78,7 @@ ExternalProject_Add(
     )
 ExternalProject_Get_Property(pgl source_dir)
 set(PglIncludeDir ${source_dir})
-
+#glm
 ExternalProject_Add(
     glm
     PREFIX ${CMAKE_BINARY_DIR}/third_party/glm
@@ -86,6 +92,7 @@ ExternalProject_Add(
 ExternalProject_Get_Property(glm source_dir)
 set(GlmIncludeDir ${source_dir})
 
+#eigen
 ExternalProject_Add(
     eigen
     PREFIX ${CMAKE_BINARY_DIR}/third_party/eigen
